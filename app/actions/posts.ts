@@ -7,9 +7,14 @@ import {
   entriesGetEntries, 
   entriesCreateEntry, 
   entriesUpdateEntry, 
-  entriesDeleteEntry 
+  entriesDeleteEntry, 
 } from '@/api';
 import type { Entry } from '@/api';
+import { client } from '@/api/client.gen';
+
+client.setConfig({
+  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api',
+})
 
 // Entry型からPost型への変換
 function entryToPost(entry: Entry): Post {
