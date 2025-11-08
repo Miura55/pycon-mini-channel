@@ -16,16 +16,23 @@ Next.js (App Router) とTypeScriptを使用したシンプルな掲示板アプ�
 - **フロントエンド**: Next.js 16.0.1, React 19.2.0, TypeScript
 - **スタイリング**: Tailwind CSS v4
 - **データ管理**: Server Components + Server Actions
-- **データストア**: JSON ファイル
+- **バックエンドAPI**: FastAPI (http://localhost:8000)
+- **APIクライアント**: @hey-api/openapi-ts
 
 ## 必要な環境
 
 - Node.js >= 20.9.0
 - npm / yarn / pnpm / bun
+- **バックエンドAPIサーバー** (http://localhost:8000 で起動している必要があります)
 
 ## セットアップ
 
-1. 依存関係をインストール:
+### 1. バックエンドAPIサーバーを起動
+
+このアプリケーションは、別途起動されているバックエンドAPIサーバー（FastAPI）と連携します。
+APIサーバーが `http://localhost:8000` で起動していることを確認してください。
+
+### 2. 依存関係をインストール
 
 ```bash
 npm install
@@ -37,7 +44,16 @@ pnpm install
 bun install
 ```
 
-2. 開発サーバーを起動:
+### 3. 環境変数の設定（オプション）
+
+`.env.local` ファイルを作成し、APIのベースURLを設定できます。
+デフォルトは `http://localhost:8000` です。
+
+```bash
+cp .env.example .env.local
+```
+
+### 4. 開発サーバーを起動
 
 ```bash
 npm run dev
@@ -49,14 +65,27 @@ pnpm dev
 bun dev
 ```
 
-3. ブラウザで [http://localhost:3000](http://localhost:3000) を開く
+### 5. ブラウザで確認
+
+ブラウザで [http://localhost:3000](http://localhost:3000) を開く
+
+## API仕様
+
+このアプリケーションは、以下のAPIエンドポイントを使用します：
+
+- `GET /entries` - 全投稿を取得
+- `POST /entries` - 新規投稿を作成
+- `PATCH /entries/{entry_id}` - 投稿を更新
+- `DELETE /entries/{entry_id}` - 投稿を削除
+
+APIクライアントは `@hey-api/openapi-ts` によって自動生成されています。
 
 ## プロジェクト構造
 
 ```
 app/
 ├── actions/
-│   └── posts.ts            # Server Actions (CRUD操作)
+│   └── posts.ts            # Server Actions (API呼び出しのラッパー)
 ├── components/
 │   ├── DeleteButton.tsx    # 削除ボタン
 │   ├── PostForm.tsx        # 投稿フォーム
@@ -69,14 +98,14 @@ app/
 ├── layout.tsx              # ルートレイアウト
 └── page.tsx                # トップページ
 
-lib/
-└── posts.ts                # データアクセス層
+api/                        # 自動生成されたAPIクライアント
+├── client.gen.ts           # APIクライアント設定
+├── sdk.gen.ts              # API関数
+├── types.gen.ts            # API型定義
+└── index.ts                # エクスポート
 
 types/
-└── post.ts                 # 型定義
-
-data/
-└── posts.json              # データストア
+└── post.ts                 # アプリケーション型定義
 ```
 
 ## 使い方
